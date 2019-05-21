@@ -186,11 +186,11 @@ var MainNetParams = Params{
 	// Address encoding magics
 	NetworkAddressPrefix: "B",
 	PubKeyAddrID:         [2]byte{0x11, 0x86},
-	PubKeyHashAddrID:     [2]byte{0x08, 0x3f},
-	PKHEdwardsAddrID:     [2]byte{0x08, 0x1f},
+	PubKeyHashAddrID:     [2]byte{0x10, 0x3f},
+	PKHEdwardsAddrID:     [2]byte{0x09, 0x1f},
 	PKHSchnorrAddrID:     [2]byte{0x08, 0x01},
-	ScriptHashAddrID:     [2]byte{0x08, 0x1a},
-	PrivateKeyID:         [2]byte{0x23, 0xde},
+	ScriptHashAddrID:     [2]byte{0x07, 0x1a},
+	PrivateKeyID:         [2]byte{0x06, 0xde},
 
 	// BIP32 hierarchical deterministic extended key magics
 	HDPrivateKeyID: [4]byte{0x01, 0xf3, 0xa5, 0xe3},
