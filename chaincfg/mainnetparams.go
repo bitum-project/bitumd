@@ -186,7 +186,7 @@ var MainNetParams = Params{
 	// Address encoding magics
 	NetworkAddressPrefix: "B",
 	PubKeyAddrID:         [2]byte{0x11, 0x86},
-	PubKeyHashAddrID:     [2]byte{0x10, 0x3f},
+	PubKeyHashAddrID:     [2]byte{0x05, 0xa3},
 	PKHEdwardsAddrID:     [2]byte{0x09, 0x1f},
 	PKHSchnorrAddrID:     [2]byte{0x08, 0x01},
 	ScriptHashAddrID:     [2]byte{0x07, 0x1a},
