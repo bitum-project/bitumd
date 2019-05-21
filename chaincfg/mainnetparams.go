@@ -222,8 +222,8 @@ var MainNetParams = Params{
 	StakeMajorityDivisor:    4,
 
 	// Bitum organization related parameters
-	// Organization address is FeUB7x34L2RqHYfFWDgN7unQxo2U5GC6z45
-	OrganizationPkScript:        hexDecode(""),
+	// Organization address is B1xAWYg2eAyXhbetkLTMWmWN3Ub8AZfkeTq
+	OrganizationPkScript:        hexDecode("76a914ca62b11e8a5ca4ea64616604adf12c819cfcc3f788ac"),
 	OrganizationPkScriptVersion: 0,
 	BlockOneLedger:              BlockOneLedgerMainNet,
 }
