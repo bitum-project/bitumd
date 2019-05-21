@@ -399,7 +399,7 @@ func anyToSockaddr(fd int, rsa *RawSockaddrAny) (Sockaddr, error) {
 		}
 		return sa, nil
 	}
-	return nil, EABITUMSUPPORT
+	return nil, EAFNOSUPPORT
 }
 
 //sys	accept(s int, rsa *RawSockaddrAny, addrlen *_Socklen) (fd int, err error) = libsocket.accept

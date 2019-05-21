@@ -160,7 +160,7 @@ func Write(fd int, p []byte) (n int, err error) {
 }
 
 // For testing: clients can set this flag to force
-// creation of IPv6 sockets to return EABITUMSUPPORT.
+// creation of IPv6 sockets to return EAFNOSUPPORT.
 var SocketDisableIPv6 bool
 
 // Sockaddr represents a socket address.
@@ -335,7 +335,7 @@ func SetsockoptTimeval(fd, level, opt int, tv *Timeval) (err error) {
 
 func Socket(domain, typ, proto int) (fd int, err error) {
 	if domain == AF_INET6 && SocketDisableIPv6 {
-		return -1, EABITUMSUPPORT
+		return -1, EAFNOSUPPORT
 	}
 	fd, err = socket(domain, typ, proto)
 	return

@@ -643,7 +643,7 @@ const socket_error = uintptr(^uint32(0))
 //sys	MultiByteToWideChar(codePage uint32, dwFlags uint32, str *byte, nstr int32, wchar *uint16, nwchar int32) (nwrite int32, err error) = kernel32.MultiByteToWideChar
 
 // For testing: clients can set this flag to force
-// creation of IPv6 sockets to return EABITUMSUPPORT.
+// creation of IPv6 sockets to return EAFNOSUPPORT.
 var SocketDisableIPv6 bool
 
 type RawSockaddrInet4 struct {
@@ -802,12 +802,12 @@ func (rsa *RawSockaddrAny) Sockaddr() (Sockaddr, error) {
 		}
 		return sa, nil
 	}
-	return nil, syscall.EABITUMSUPPORT
+	return nil, syscall.EAFNOSUPPORT
 }
 
 func Socket(domain, typ, proto int) (fd Handle, err error) {
 	if domain == AF_INET6 && SocketDisableIPv6 {
-		return InvalidHandle, syscall.EABITUMSUPPORT
+		return InvalidHandle, syscall.EAFNOSUPPORT
 	}
 	return socket(int32(domain), int32(typ), int32(proto))
 }

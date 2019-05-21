@@ -2484,7 +2484,7 @@ const (
 	EADDRINUSE      = syscall.Errno(0x30)
 	EADDRNOTAVAIL   = syscall.Errno(0x31)
 	EADV            = syscall.Errno(0x53)
-	EABITUMSUPPORT    = syscall.Errno(0x2f)
+	EAFNOSUPPORT    = syscall.Errno(0x2f)
 	EAGAIN          = syscall.Errno(0xb)
 	EALREADY        = syscall.Errno(0x25)
 	EBADE           = syscall.Errno(0x66)
@@ -2584,7 +2584,7 @@ const (
 	EOVERFLOW       = syscall.Errno(0x5c)
 	EOWNERDEAD      = syscall.Errno(0x84)
 	EPERM           = syscall.Errno(0x1)
-	EPBITUMSUPPORT    = syscall.Errno(0x2e)
+	EPFNOSUPPORT    = syscall.Errno(0x2e)
 	EPIPE           = syscall.Errno(0x20)
 	EPROCLIM        = syscall.Errno(0x43)
 	EPROTO          = syscall.Errno(0x56)
@@ -2706,8 +2706,8 @@ var errorList = [...]struct {
 	{43, "EPROTONOSUPPORT", "protocol not supported"},
 	{44, "ESOCKTNOSUPPORT", "socket type not supported"},
 	{45, "ENOTSUP", "operation not supported"},
-	{46, "EPBITUMSUPPORT", "protocol family not supported"},
-	{47, "EABITUMSUPPORT", "address family not supported by protocol"},
+	{46, "EPFNOSUPPORT", "protocol family not supported"},
+	{47, "EAFNOSUPPORT", "address family not supported by protocol"},
 	{48, "EADDRINUSE", "address already in use"},
 	{49, "EADDRNOTAVAIL", "cannot assign requested address"},
 	{50, "ENETDOWN", "network is down"},

@@ -260,7 +260,7 @@ func anyToSockaddr(fd int, rsa *RawSockaddrAny) (Sockaddr, error) {
 		}
 		return sa, nil
 	}
-	return nil, EABITUMSUPPORT
+	return nil, EAFNOSUPPORT
 }
 
 func Gettimeofday(tv *Timeval) (err error) {
