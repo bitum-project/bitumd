@@ -1,0 +1,13 @@
+[Unit]
+Description=Bitum Full Node
+
+[Service]
+Type=simple
+User=bitumd
+Group=bitumd
+WorkingDirectory=/var/bitumd
+ExecStart=/opt/bitum/bin/bitumd --appdata=/var/bitumd
+Restart=on-abnormal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,4 @@
+# Do not add anything here, otherwise the files will end up in Codechain!
+# If necessary, instead extend `make clean` to clean the tree.
+.codechain_mainnet/tree
+.codechain_testnet/tree
