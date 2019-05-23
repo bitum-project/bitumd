@@ -142,7 +142,7 @@ var genesisCoinbaseTxLegacy = wire.MsgTx{
 // for the test network.
 var testNetGenesisMerkleRoot = genesisCoinbaseTxLegacy.TxHash()
 
-// testNet3GenesisBlock defines the genesis block of the block chain which
+// testNetGenesisBlock defines the genesis block of the block chain which
 // serves as the public transaction ledger for the test network (version 3).
 var testNetGenesisBlock = wire.MsgBlock{
 	Header: wire.BlockHeader{
