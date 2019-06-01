@@ -205,19 +205,22 @@ func detectNetworkForAddress(addr string) (*chaincfg.Params, error) {
 		return nil, fmt.Errorf("empty string given for network detection")
 	}
 
-	networkChar := addr[0:1]
-	switch networkChar {
-	case chaincfg.MainNetParams.NetworkAddressPrefix:
-		return &chaincfg.MainNetParams, nil
-	case chaincfg.TestNetParams.NetworkAddressPrefix:
-		return &chaincfg.TestNetParams, nil
-	case chaincfg.SimNetParams.NetworkAddressPrefix:
-		return &chaincfg.SimNetParams, nil
-	case chaincfg.RegNetParams.NetworkAddressPrefix:
-		return &chaincfg.RegNetParams, nil
-	}
-
-	return nil, fmt.Errorf("unknown network type in string encoded address")
+	return &chaincfg.MainNetParams, nil
+	
+//	networkChar := addr[0:1]
+//	switch networkChar {
+//	case chaincfg.MainNetParams.NetworkAddressPrefix:
+//		return &chaincfg.MainNetParams, nil
+//	case chaincfg.TestNetParams.NetworkAddressPrefix:
+//		return &chaincfg.TestNetParams, nil
+//	case chaincfg.SimNetParams.NetworkAddressPrefix:
+//		return &chaincfg.SimNetParams, nil
+//	case chaincfg.RegNetParams.NetworkAddressPrefix:
+//		return &chaincfg.RegNetParams, nil
+//	}
+//
+//	return nil, fmt.Errorf("unknown network type in string encoded address")
+	
 }
 
 // AddressPubKeyHash is an Address for a pay-to-pubkey-hash (P2PKH)
