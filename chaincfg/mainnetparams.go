@@ -47,7 +47,14 @@ var MainNetParams = Params{
 	BlockTaxProportion:       1,
 
 	// Checkpoints ordered from oldest to newest.
-	Checkpoints: []Checkpoint{},
+	Checkpoints: []Checkpoint{
+		{100, newHashFromStr("000000005b24df7dd3dcdfbb4a90e4001963360b4181f4975e9b94a3d94039a8")},
+		{500, newHashFromStr("000000001d5f634c9fda95180ccb472de9cbc7d25e3fea276b8b2706ea04a610")},
+		{1000, newHashFromStr("000000000037c4bba623aa717b50e530a5f9fd891df815e2791cd0a3a233b782")},
+		{2000, newHashFromStr("0000000000104f477a38499a5988c5ace7e155e9fb27554b955f3e22724736cc")},
+		{3000, newHashFromStr("00000000000207e68b97cf74585aec083d3118a524f50a177615622bf0bb2b9c")},
+		{4000, newHashFromStr("00000000001461c0cc9e88eca5a2e82029dddf240457d3a4b99725984a8362c2")},
+	},
 
 	// The miner confirmation window is defined as:
 	//   target proof of work timespan / target proof of work spacing
