@@ -88,7 +88,7 @@ var MainNetParams = Params{
 					IsNo:        false,
 				}},
 			},
-			StartTime:  1557360000,
+			StartTime:  1559472000,
 			ExpireTime: 1577836800,
 		}, {
 			Vote: Vote{
@@ -115,7 +115,7 @@ var MainNetParams = Params{
 					IsNo:        false,
 				}},
 			},
-			StartTime:  1557360000,
+			StartTime:  1559472000,
 			ExpireTime: 1577836800,
 		}},
 		5: {{
@@ -143,7 +143,7 @@ var MainNetParams = Params{
 					IsNo:        false,
 				}},
 			},
-			StartTime:  1557360000,
+			StartTime:  1559472000,
 			ExpireTime: 1577836800,
 		}},
 		6: {{
@@ -171,7 +171,7 @@ var MainNetParams = Params{
 					IsNo:        false,
 				}},
 			},
-			StartTime:  1557360000,
+			StartTime:  1559472000,
 			ExpireTime: 1577836800,
 		}},
 	},
