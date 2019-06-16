@@ -878,12 +878,10 @@ func sdiffAlgoDeploymentVersion(network wire.CurrencyNet) uint32 {
 //
 // This function MUST be called with the chain state lock held (for writes).
 func (b *BlockChain) calcNextRequiredStakeDifficulty(curNode *blockNode) (int64, error) {
-	// Determine the correct deployment version for the new stake difficulty
-	// algorithm consensus vote or treat it as active when voting is not enabled
-	// for the current network.
-	const deploymentID = chaincfg.VoteIDSDiffAlgorithm
-	deploymentVer, ok := b.deploymentVers[deploymentID]
-	if !ok {
+	// Consensus voting on the new stake difficulty algorithm is only
+	// enabled on regnet.
+	net := b.chainParams.Net
+	if net != wire.RegNet {
 		return b.calcNextRequiredStakeDifficultyV2(curNode)
 	}
 
@@ -893,9 +891,9 @@ func (b *BlockChain) calcNextRequiredStakeDifficulty(curNode *blockNode) (int64,
 	// NOTE: The choice field of the return threshold state is not examined
 	// here because there is only one possible choice that can be active
 	// for the agenda, which is yes, so there is no need to check it.
-	state, err := b.deploymentState(curNode, deploymentVer, deploymentID)
-
-
+	deploymentVersion := sdiffAlgoDeploymentVersion(net)
+	state, err := b.deploymentState(curNode, deploymentVersion,
+		chaincfg.VoteIDSDiffAlgorithm)
 	if err != nil {
 		return 0, err
 	}
@@ -1370,12 +1368,10 @@ func (b *BlockChain) estimateNextStakeDifficultyV2(curNode *blockNode, newTicket
 //
 // This function MUST be called with the chain state lock held (for writes).
 func (b *BlockChain) estimateNextStakeDifficulty(curNode *blockNode, newTickets int64, useMaxTickets bool) (int64, error) {
-	// Determine the correct deployment version for the new stake difficulty
-	// algorithm consensus vote or treat it as active when voting is not enabled
-	// for the current network.
-	const deploymentID = chaincfg.VoteIDSDiffAlgorithm
-	deploymentVer, ok := b.deploymentVers[deploymentID]
-	if !ok {
+	// Consensus voting on the new stake difficulty algorithm is only
+	// enabled on mainnet, testnet v2 (removed from code), and regnet.
+	net := b.chainParams.Net
+	if net != wire.MainNet && net != wire.RegNet {
 		return b.calcNextRequiredStakeDifficultyV2(curNode)
 	}
 
@@ -1385,9 +1381,9 @@ func (b *BlockChain) estimateNextStakeDifficulty(curNode *blockNode, newTickets 
 	// NOTE: The choice field of the return threshold state is not examined
 	// here because there is only one possible choice that can be active
 	// for the agenda, which is yes, so there is no need to check it.
-	state, err := b.deploymentState(curNode, deploymentVer, deploymentID)
-
-
+	deploymentVersion := sdiffAlgoDeploymentVersion(net)
+	state, err := b.deploymentState(curNode, deploymentVersion,
+		chaincfg.VoteIDSDiffAlgorithm)
 	if err != nil {
 		return 0, err
 	}

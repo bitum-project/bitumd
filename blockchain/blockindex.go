@@ -1,6 +1,5 @@
 // Copyright (c) 2013-2017 The btcsuite developers
 // Copyright (c) 2018 The Decred developers
-// Copyright (c) 2019 The Bitum developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
@@ -14,6 +13,7 @@ import (
 	"time"
 
 	"github.com/bitum-project/bitumd/blockchain/stake"
+	"github.com/bitum-project/bitumd/chaincfg"
 	"github.com/bitum-project/bitumd/chaincfg/chainhash"
 	"github.com/bitum-project/bitumd/database"
 	"github.com/bitum-project/bitumd/wire"
@@ -309,7 +309,8 @@ type blockIndex struct {
 	// The following fields are set when the instance is created and can't
 	// be changed afterwards, so there is no need to protect them with a
 	// separate mutex.
-	db database.DB
+	db          database.DB
+	chainParams *chaincfg.Params
 
 	// These following fields are protected by the embedded mutex.
 	//
@@ -329,12 +330,13 @@ type blockIndex struct {
 // newBlockIndex returns a new empty instance of a block index.  The index will
 // be dynamically populated as block nodes are loaded from the database and
 // manually added.
-func newBlockIndex(db database.DB) *blockIndex {
+func newBlockIndex(db database.DB, chainParams *chaincfg.Params) *blockIndex {
 	return &blockIndex{
-		db:        db,
-		index:     make(map[chainhash.Hash]*blockNode),
-		modified:  make(map[*blockNode]struct{}),
-		chainTips: make(map[int64][]*blockNode),
+		db:          db,
+		chainParams: chainParams,
+		index:       make(map[chainhash.Hash]*blockNode),
+		modified:    make(map[*blockNode]struct{}),
+		chainTips:   make(map[int64][]*blockNode),
 	}
 }
 

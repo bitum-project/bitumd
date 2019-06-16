@@ -10,6 +10,7 @@ import (
 
 	"github.com/bitum-project/bitumd/chaincfg"
 	"github.com/bitum-project/bitumd/chaincfg/chainhash"
+	"github.com/bitum-project/bitumd/wire"
 )
 
 // ThresholdState define the various threshold states used when voting on
@@ -602,17 +603,21 @@ func (b *BlockChain) NextThresholdState(hash *chainhash.Hash, version uint32, de
 //
 // This function MUST be called with the chain state lock held (for writes).
 func (b *BlockChain) isLNFeaturesAgendaActive(prevNode *blockNode) (bool, error) {
-	// Determine the correct deployment version for the LN features consensus
-	// vote as defined in DCP0002 and DCP0003 or treat it as active when voting
-	// is not enabled for the current network.
-	const deploymentID = chaincfg.VoteIDLNFeatures
-	deploymentVer, ok := b.deploymentVers[deploymentID]
-	if !ok {
+	// Consensus voting on LN features is only enabled on regnet.
+	net := b.chainParams.Net
+	if net != wire.RegNet {
 		return true, nil
 	}
 
-	state, err := b.deploymentState(prevNode, deploymentVer, deploymentID)
+	// Determine the version for the LN features agenda as defined in
+	// DCP0002 and DCP0003 for the provided network.
+	deploymentVer := uint32(5)
+	if b.chainParams.Net != wire.MainNet {
+		deploymentVer = 6
+	}
 
+	state, err := b.deploymentState(prevNode, deploymentVer,
+		chaincfg.VoteIDLNFeatures)
 	if err != nil {
 		return false, err
 	}
@@ -647,17 +652,22 @@ func (b *BlockChain) IsLNFeaturesAgendaActive() (bool, error) {
 //
 // This function MUST be called with the chain state lock held (for writes).
 func (b *BlockChain) isFixSeqLocksAgendaActive(prevNode *blockNode) (bool, error) {
-	// Determine the correct deployment version for the fix sequence locks
-	// consensus vote as defined in DCP0004 or treat it as active when voting
-	// is not enabled for the current network.
-	const deploymentID = chaincfg.VoteIDFixLNSeqLocks
-	deploymentVer, ok := b.deploymentVers[deploymentID]
-	if !ok {
+	// Consensus voting on the fix sequence locks agenda is only enabled on
+	// testnet v3 and regnet.
+	net := b.chainParams.Net
+	if net != wire.TestNet && net != wire.RegNet {
 		return true, nil
 	}
 
-	state, err := b.deploymentState(prevNode, deploymentVer, deploymentID)
+	// Determine the version for the fix sequence locks agenda as defined in
+	// DCP0004 for the provided network.
+	deploymentVer := uint32(6)
+	if b.chainParams.Net != wire.MainNet {
+		deploymentVer = 7
+	}
 
+	state, err := b.deploymentState(prevNode, deploymentVer,
+		chaincfg.VoteIDFixLNSeqLocks)
 	if err != nil {
 		return false, err
 	}
@@ -667,7 +677,6 @@ func (b *BlockChain) isFixSeqLocksAgendaActive(prevNode *blockNode) (bool, error
 	// the agenda, which is yes, so there is no need to check it.
 	return state.State == ThresholdActive, nil
 }
-
 
 // IsFixSeqLocksAgendaActive returns whether or not whether or not the fix
 // sequence locks agenda vote, as defined in DCP0004 has passed and is now
