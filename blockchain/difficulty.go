@@ -880,10 +880,12 @@ func sdiffAlgoDeploymentVersion(network wire.CurrencyNet) uint32 {
 func (b *BlockChain) calcNextRequiredStakeDifficulty(curNode *blockNode) (int64, error) {
 	// Consensus voting on the new stake difficulty algorithm is only
 	// enabled on regnet.
+	//return b.calcNextRequiredStakeDifficultyV2(curNode)
+
 	net := b.chainParams.Net
-	if net != wire.RegNet {
-		return b.calcNextRequiredStakeDifficultyV2(curNode)
-	}
+	//if net != wire.RegNet {
+	//	return b.calcNextRequiredStakeDifficultyV2(curNode)
+	//}
 
 	// Use the new stake difficulty algorithm if the stake vote for the new
 	// algorithm agenda is active.

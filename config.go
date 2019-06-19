@@ -39,7 +39,7 @@ const (
 	defaultLogLevel              = "info"
 	defaultLogDirname            = "logs"
 	defaultLogFilename           = "bitumd.log"
-	defaultMaxSameIP             = 5
+	defaultMaxSameIP             = 25
 	defaultMaxPeers              = 125
 	defaultBanDuration           = time.Hour * 24
 	defaultBanThreshold          = 100
