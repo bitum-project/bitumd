@@ -897,7 +897,7 @@ func (b *BlockChain) calcNextRequiredStakeDifficulty(curNode *blockNode) (int64,
 	if err != nil {
 		return 0, err
 	}
-	return b.calcNextRequiredStakeDifficultyV2(curNode)
+	//return b.calcNextRequiredStakeDifficultyV2(curNode)
 
 	if state.State == ThresholdActive {
 		return b.calcNextRequiredStakeDifficultyV2(curNode)
