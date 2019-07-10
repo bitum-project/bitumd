@@ -19,7 +19,6 @@ import (
 	"strconv"
 	"sync"
 	"time"
-	"math"
 	
 	"github.com/gorilla/websocket"
 	"golang.org/x/crypto/ripemd160"
@@ -1619,7 +1618,7 @@ out:
 
 						// Marshal request output.
 						reply, err := createMarshalledReply(cmd.jsonrpc, cmd.id, resp, err)
-						if err != nil || math.IsNaN(string(resp)) || resp == nil {
+						if err != nil || resp == nil {
 							rpcsLog.Errorf("Failed to marshal reply for <%s> "+
 								"command: %v", cmd.method, err)
 							return
@@ -1688,7 +1687,7 @@ func (c *wsClient) serviceRequest(r *parsedRPCCmd) {
 		result, err = c.server.standardCmdResult(r, nil)
 	}
 	reply, err := createMarshalledReply(r.jsonrpc, r.id, result, err)
-	if err != nil || math.IsNaN(string(result)) || result == nil {
+	if err != nil || result == nil {
 		rpcsLog.Errorf("Failed to marshal reply for <%s> "+
 			"command: %v", r.method, err)
 		return
