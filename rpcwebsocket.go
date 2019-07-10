@@ -1619,7 +1619,7 @@ out:
 
 						// Marshal request output.
 						reply, err := createMarshalledReply(cmd.jsonrpc, cmd.id, resp, err)
-						if err != nil || math.IsNaN(string(reply)) || reply == nil {
+						if err != nil || math.IsNaN(string(resp)) || resp == nil {
 							rpcsLog.Errorf("Failed to marshal reply for <%s> "+
 								"command: %v", cmd.method, err)
 							return
@@ -1688,7 +1688,7 @@ func (c *wsClient) serviceRequest(r *parsedRPCCmd) {
 		result, err = c.server.standardCmdResult(r, nil)
 	}
 	reply, err := createMarshalledReply(r.jsonrpc, r.id, result, err)
-	if err != nil || math.IsNaN(string(reply)) || reply == nil {
+	if err != nil || math.IsNaN(string(result)) || result == nil {
 		rpcsLog.Errorf("Failed to marshal reply for <%s> "+
 			"command: %v", r.method, err)
 		return
