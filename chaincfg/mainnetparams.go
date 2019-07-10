@@ -65,7 +65,7 @@ var MainNetParams = Params{
 	RuleChangeActivationDivisor:    4,
 	RuleChangeActivationInterval:   2016 * 4, // 4 weeks
 	Deployments: map[uint32][]ConsensusDeployment{
-		4: {{
+		3: {{
 			Vote: Vote{
 				Id:          VoteIDSDiffAlgorithm,
 				Description: "Change stake difficulty algorithm as defined in DCP0001",
@@ -92,7 +92,8 @@ var MainNetParams = Params{
 			},
 			StartTime:  1559472000,
 			ExpireTime: 1577836800,
-		}, {
+		}},
+		4: {{
 			Vote: Vote{
 				Id:          VoteIDLNSupport,
 				Description: "Request developers begin work on Lightning Network (LN) integration",
