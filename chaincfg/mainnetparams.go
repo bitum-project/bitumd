@@ -66,6 +66,34 @@ var MainNetParams = Params{
 	RuleChangeActivationInterval:   2016 * 4, // 4 weeks
 	
 	Deployments: map[uint32][]ConsensusDeployment{
+			3: {{
+				Vote: Vote{
+					Id:          VoteIDLNSupport,
+					Description: "Request developers begin work on Lightning Network (LN) integration",
+					Mask:        0x0018,
+					Choices: []Choice{{
+						Id:          "abstain",
+						Description: "abstain voting for change",
+						Bits:        0x0000,
+						IsAbstain:   true,
+						IsNo:        false,
+					}, {
+						Id:          "no",
+						Description: "no, do not work on integrating LN support",
+						Bits:        0x0008,
+						IsAbstain:   false,
+						IsNo:        true,
+					}, {
+						Id:          "yes",
+						Description: "yes, begin work on integrating LN support",
+						Bits:        0x0010,
+						IsAbstain:   false,
+						IsNo:        false,
+					}},
+				},
+				StartTime:  1493164800,
+				ExpireTime: 1577836800,
+			}},
 			4: {{
 				Vote: Vote{
 					Id:          VoteIDSDiffAlgorithm,
@@ -87,33 +115,6 @@ var MainNetParams = Params{
 						Id:          "yes",
 						Description: "change to the new algorithm",
 						Bits:        0x0004,
-						IsAbstain:   false,
-						IsNo:        false,
-					}},
-				},
-				StartTime:  1493164800,
-				ExpireTime: 1577836800,
-			}, {
-				Vote: Vote{
-					Id:          VoteIDLNSupport,
-					Description: "Request developers begin work on Lightning Network (LN) integration",
-					Mask:        0x0018,
-					Choices: []Choice{{
-						Id:          "abstain",
-						Description: "abstain voting for change",
-						Bits:        0x0000,
-						IsAbstain:   true,
-						IsNo:        false,
-					}, {
-						Id:          "no",
-						Description: "no, do not work on integrating LN support",
-						Bits:        0x0008,
-						IsAbstain:   false,
-						IsNo:        true,
-					}, {
-						Id:          "yes",
-						Description: "yes, begin work on integrating LN support",
-						Bits:        0x0010,
 						IsAbstain:   false,
 						IsNo:        false,
 					}},
