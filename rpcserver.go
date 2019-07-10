@@ -3844,9 +3844,16 @@ func handleGetVoteInfo(s *rpcServer, cmd interface{}, closeChan <-chan struct{})
 
 		// Calculate choice progress.
 		for k := range a.Choices {
-			a.Choices[k].Count = counts.VoteChoices[k]
-			a.Choices[k].Progress = float64(counts.VoteChoices[k]) /
-				float64(counts.Total)
+			if counts.VoteChoices[k] > 0 {
+				a.Choices[k].Count = counts.VoteChoices[k]
+			} else {
+				a.Choices[k].Count = 0
+			}
+			if counts.Total > 0 {
+				a.Choices[k].Progress = float64(counts.VoteChoices[k]) / float64(counts.Total)
+			} else {
+				a.Choices[k].Progress = float64(0)
+			}
 		}
 
 		// Append transformed agenda.
