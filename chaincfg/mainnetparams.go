@@ -93,8 +93,7 @@ var MainNetParams = Params{
 				},
 				StartTime:  1493164800, // Apr 26th, 2017
 				ExpireTime: 1577836800, // Apr 26th, 2018
-			}},
-			3: {{
+			}, {
 				Vote: Vote{
 					Id:          VoteIDLNSupport,
 					Description: "Request developers begin work on Lightning Network (LN) integration",
