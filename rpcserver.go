@@ -2797,13 +2797,13 @@ func handleGetBlockTemplateRequest(s *rpcServer, request *bitumjson.TemplateRequ
 	}
 
 	// No point in generating or accepting work before the chain is synced.
-	bestHeight := s.server.blockManager.chain.BestSnapshot().Height
-	if bestHeight != 0 && !s.server.blockManager.IsCurrent() {
-		return nil, &bitumjson.RPCError{
-			Code:    bitumjson.ErrRPCClientInInitialDownload,
-			Message: "Bitum is downloading blocks...",
-		}
-	}
+	//bestHeight := s.server.blockManager.chain.BestSnapshot().Height
+	//if bestHeight != 0 && !s.server.blockManager.IsCurrent() {
+	//	return nil, &bitumjson.RPCError{
+	//		Code:    bitumjson.ErrRPCClientInInitialDownload,
+	//		Message: "Bitum is downloading blocks...",
+	//	}
+	//}
 
 	// When a long poll ID was provided, this is a long poll request by the
 	// client to be notified when block template referenced by the ID
@@ -4325,13 +4325,13 @@ func handleGetWork(s *rpcServer, cmd interface{}, closeChan <-chan struct{}) (in
 	}
 
 	// No point in generating or accepting work before the chain is synced.
-	bestHeight := s.server.blockManager.chain.BestSnapshot().Height
-	if bestHeight != 0 && !s.server.blockManager.IsCurrent() {
-		return nil, &bitumjson.RPCError{
-			Code:    bitumjson.ErrRPCClientInInitialDownload,
-			Message: "Bitum is downloading blocks...",
-		}
-	}
+	//bestHeight := s.server.blockManager.chain.BestSnapshot().Height
+	//if bestHeight != 0 && !s.server.blockManager.IsCurrent() {
+	//	return nil, &bitumjson.RPCError{
+	//		Code:    bitumjson.ErrRPCClientInInitialDownload,
+	//		Message: "Bitum is downloading blocks...",
+	//	}
+	//}
 
 	c := cmd.(*bitumjson.GetWorkCmd)
 
