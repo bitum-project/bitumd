@@ -16,10 +16,9 @@ var MainNetParams = Params{
 	Name:        "mainnet",
 	Net:         wire.MainNet,
 	DefaultPort: "9208",
-	DNSSeeds: nil,
-	//[]DNSSeed{
-	//	{"dnsseed.bitum.io", true},
-	//},
+	DNSSeeds: []DNSSeed{
+		{"dnsseed.bitum.io", true},
+	},
 
 	// Chain parameters
 	GenesisBlock:             &genesisBlock,
