@@ -174,7 +174,7 @@ func (b *BlockChain) calcEasiestDifficulty(bits uint32, duration time.Duration, 
 	// The test network rules allow minimum difficulty blocks once too much
 	// time has elapsed without mining a block.
 
-	if (height >= 19318) {
+	if (height >= 19320) {
 		log.Debugf("(calcEasiestDifficulty) Block height %d", height)
 		return b.chainParams.PowLimitBits
 	}
@@ -238,7 +238,7 @@ func (b *BlockChain) calcNextRequiredDifficulty(curNode *blockNode, newBlockTime
 	oldDiff := curNode.bits
 	oldDiffBig := CompactToBig(curNode.bits)
 
-	if (curNode.height >= 19318) {
+	if (curNode.height >= 19320) {
 		log.Debugf("(calcNextRequiredDifficulty) Block height %d", curNode.height)
 		return b.chainParams.PowLimitBits, nil
 	}
