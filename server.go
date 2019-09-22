@@ -764,10 +764,6 @@ func (sp *serverPeer) OnGetBlocks(p *peer.Peer, msg *wire.MsgGetBlocks) {
 	// provided locator are known.  This does mean the client will start
 	// over with the genesis block if unknown block locators are provided.
 	chain := sp.server.blockManager.chain
-	if(msg.HashStop.String() == "0000000000000000000000000000000000000000000000000000000000000000") {
-		NewHashStop := []byte("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")
-		msg.HashStop = chainhash.HashH(NewHashStop)
-	}
 	hashList := chain.LocateBlocks(msg.BlockLocatorHashes, &msg.HashStop,
 		wire.MaxBlocksPerMsg)
 
@@ -809,10 +805,6 @@ func (sp *serverPeer) OnGetHeaders(p *peer.Peer, msg *wire.MsgGetHeaders) {
 	// provided locator are known.  This does mean the client will start
 	// over with the genesis block if unknown block locators are provided.
 	chain := sp.server.blockManager.chain
-	if(msg.HashStop.String() == "0000000000000000000000000000000000000000000000000000000000000000") {
-		NewHashStop := []byte("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")
-		msg.HashStop = chainhash.HashH(NewHashStop)
-	}
 	headers := chain.LocateHeaders(msg.BlockLocatorHashes, &msg.HashStop)
 
 	// Send found headers to the requesting peer.
@@ -956,10 +948,6 @@ func (sp *serverPeer) OnGetCFHeaders(p *peer.Peer, msg *wire.MsgGetCFHeaders) {
 	// locator are known.  This does mean the served filter headers will start
 	// over at the genesis block if unknown block locators are provided.
 	chain := sp.server.blockManager.chain
-	if(msg.HashStop.String() == "0000000000000000000000000000000000000000000000000000000000000000") {
-		NewHashStop := []byte("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")
-		msg.HashStop = chainhash.HashH(NewHashStop)
-	}
 	hashList := chain.LocateBlocks(msg.BlockLocatorHashes, &msg.HashStop,
 		wire.MaxCFHeadersPerMsg)
 	if len(hashList) == 0 {

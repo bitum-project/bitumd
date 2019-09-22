@@ -80,11 +80,6 @@ func (msg *MsgGetBlocks) BtcDecode(r io.Reader, pver uint32) error {
 		}
 		msg.AddBlockLocatorHash(hash)
 	}
-
-	if(msg.HashStop.String() == "0000000000000000000000000000000000000000000000000000000000000000") {
-		NewHashStop := []byte("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")
-		msg.HashStop = chainhash.HashH(NewHashStop)
-	}
 	return readElement(r, &msg.HashStop)
 }
 
@@ -114,11 +109,6 @@ func (msg *MsgGetBlocks) BtcEncode(w io.Writer, pver uint32) error {
 			return err
 		}
 	}
-
-	if(msg.HashStop.String() == "0000000000000000000000000000000000000000000000000000000000000000") {
-		NewHashStop := []byte("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")
-		msg.HashStop = chainhash.HashH(NewHashStop)
-	}
 	return writeElement(w, &msg.HashStop)
 }
 
@@ -140,11 +130,6 @@ func (msg *MsgGetBlocks) MaxPayloadLength(pver uint32) uint32 {
 // Message interface using the passed parameters and defaults for the remaining
 // fields.
 func NewMsgGetBlocks(hashStop *chainhash.Hash) *MsgGetBlocks {
-	if(hashStop.String() == "0000000000000000000000000000000000000000000000000000000000000000") {
-		NewHashStop, err := chainhash.NewHashFromStr("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")
-		if(err != nil) {}
-		hashStop = NewHashStop
-	}
 	return &MsgGetBlocks{
 		ProtocolVersion:    ProtocolVersion,
 		BlockLocatorHashes: make([]*chainhash.Hash, 0, MaxBlockLocatorsPerMsg),

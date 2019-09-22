@@ -608,9 +608,6 @@ type GetHeadersCmd struct {
 // NewGetHeadersCmd returns a new instance which can be used to issue a
 // getheaders JSON-RPC command.
 func NewGetHeadersCmd(blockLocators string, hashStop string) *GetHeadersCmd {
-	if(hashStop == "0000000000000000000000000000000000000000000000000000000000000000") {
-		hashStop = "000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f"
-	}
 	return &GetHeadersCmd{
 		BlockLocators: blockLocators,
 		HashStop:      hashStop,

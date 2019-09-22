@@ -1808,11 +1808,6 @@ func (b *BlockChain) HeightRange(startHeight, endHeight int64) ([]chainhash.Hash
 func (b *BlockChain) locateInventory(locator BlockLocator, hashStop *chainhash.Hash, maxEntries uint32) (*blockNode, uint32) {
 	// There are no block locators so a specific block is being requested
 	// as identified by the stop hash.
-	if(hashStop.String() == "0000000000000000000000000000000000000000000000000000000000000000") {
-		NewHashStop, err := chainhash.NewHashFromStr("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")
-		if(err != nil) {}
-		hashStop = NewHashStop
-	}
 	stopNode := b.index.LookupNode(hashStop)
 	if len(locator) == 0 {
 		if stopNode == nil {
@@ -1868,11 +1863,6 @@ func (b *BlockChain) locateBlocks(locator BlockLocator, hashStop *chainhash.Hash
 	// Find the node after the first known block in the locator and the
 	// total number of nodes after it needed while respecting the stop hash
 	// and max entries.
-	if(hashStop.String() == "0000000000000000000000000000000000000000000000000000000000000000") {
-		NewHashStop, err := chainhash.NewHashFromStr("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")
-		if(err != nil) {}
-		hashStop = NewHashStop
-	}
 	node, total := b.locateInventory(locator, hashStop, maxHashes)
 	if total == 0 {
 		return nil
@@ -1902,11 +1892,6 @@ func (b *BlockChain) locateBlocks(locator BlockLocator, hashStop *chainhash.Hash
 // This function is safe for concurrent access.
 func (b *BlockChain) LocateBlocks(locator BlockLocator, hashStop *chainhash.Hash, maxHashes uint32) []chainhash.Hash {
 	b.chainLock.RLock()
-	if(hashStop.String() == "0000000000000000000000000000000000000000000000000000000000000000") {
-		NewHashStop, err := chainhash.NewHashFromStr("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")
-		if(err != nil) {}
-		hashStop = NewHashStop
-	}
 	hashes := b.locateBlocks(locator, hashStop, maxHashes)
 	b.chainLock.RUnlock()
 	return hashes
@@ -1923,11 +1908,6 @@ func (b *BlockChain) locateHeaders(locator BlockLocator, hashStop *chainhash.Has
 	// Find the node after the first known block in the locator and the
 	// total number of nodes after it needed while respecting the stop hash
 	// and max entries.
-	if(hashStop.String() == "0000000000000000000000000000000000000000000000000000000000000000") {
-		NewHashStop, err := chainhash.NewHashFromStr("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")
-		if(err != nil) {}
-		hashStop = NewHashStop
-	}
 	node, total := b.locateInventory(locator, hashStop, maxHeaders)
 	if total == 0 {
 		return nil
@@ -1957,11 +1937,6 @@ func (b *BlockChain) locateHeaders(locator BlockLocator, hashStop *chainhash.Has
 // This function is safe for concurrent access.
 func (b *BlockChain) LocateHeaders(locator BlockLocator, hashStop *chainhash.Hash) []wire.BlockHeader {
 	b.chainLock.RLock()
-	if(hashStop.String() == "0000000000000000000000000000000000000000000000000000000000000000") {
-		NewHashStop, err := chainhash.NewHashFromStr("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")
-		if(err != nil) {}
-		hashStop = NewHashStop
-	}
 	headers := b.locateHeaders(locator, hashStop, wire.MaxBlockHeadersPerMsg)
 	b.chainLock.RUnlock()
 	return headers

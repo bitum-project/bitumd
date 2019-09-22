@@ -78,10 +78,6 @@ func (msg *MsgGetHeaders) BtcDecode(r io.Reader, pver uint32) error {
 		msg.AddBlockLocatorHash(hash)
 	}
 
-	if(msg.HashStop.String() == "0000000000000000000000000000000000000000000000000000000000000000") {
-		NewHashStop := []byte("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")
-		msg.HashStop = chainhash.HashH(NewHashStop)
-	}
 	return readElement(r, &msg.HashStop)
 }
 
@@ -113,10 +109,6 @@ func (msg *MsgGetHeaders) BtcEncode(w io.Writer, pver uint32) error {
 		}
 	}
 
-	if(msg.HashStop.String() == "0000000000000000000000000000000000000000000000000000000000000000") {
-		NewHashStop := []byte("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")
-		msg.HashStop = chainhash.HashH(NewHashStop)
-	}
 	return writeElement(w, &msg.HashStop)
 }
 
