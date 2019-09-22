@@ -785,7 +785,7 @@ func handleTooFewVoters(subsidyCache *blockchain.SubsidyCache, nextHeight int64,
 
 				// If we're on testnet, the time since this last block
 				// listed as the parent must be taken into consideration.
-				if (cptCopy.Block.Header.Height >= 19320 && cptCopy.Block.Header.Height <= 19385) {
+				if (cptCopy.Block.Header.Height >= 19320 && cptCopy.Block.Header.Height <= 19386) {
 					parentHash := cptCopy.Block.Header.PrevBlock
 					requiredDifficulty, err := bm.CalcNextRequiredDiffNode(&parentHash, ts)
 					if err != nil {
@@ -883,7 +883,7 @@ func handleTooFewVoters(subsidyCache *blockchain.SubsidyCache, nextHeight int64,
 
 				// If we're on testnet, the time since this last block
 				// listed as the parent must be taken into consideration.
-				if (btMsgBlock.Header.Height >= 19320 && btMsgBlock.Header.Height <= 19385) {
+				if (btMsgBlock.Header.Height >= 19320 && btMsgBlock.Header.Height <= 19386) {
 					parentHash := topBlock.MsgBlock().Header.PrevBlock
 					requiredDifficulty, err := bm.CalcNextRequiredDiffNode(&parentHash, ts)
 					if err != nil {
@@ -1988,7 +1988,7 @@ func (g *BlkTmplGenerator) UpdateBlockTime(header *wire.BlockHeader) error {
 
 	// If running on a network that requires recalculating the difficulty,
 	// do so now.
-	if (header.Height >= 19320 && header.Height <= 19385) {
+	if (header.Height >= 19320 && header.Height <= 19386) {
 		difficulty, err := g.chain.CalcNextRequiredDifficulty(newTimestamp)
 		if err != nil {
 			return miningRuleError(ErrGettingDifficulty, err.Error())
