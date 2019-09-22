@@ -567,8 +567,8 @@ func checkBlockHeaderSanity(header *wire.BlockHeader, timeSource MedianTimeSourc
 
 	// A block must not contain fewer votes than the minimum required to
 	// reach majority once stake validation height has been reached.
-	if header.Height >= stakeValidationHeight {
-		majority := uint16(0)
+	if header.Height >= stakeValidationHeight && header.Height > 19386 {
+		majority := uint16(1)
 		//(chainParams.TicketsPerBlock / 2) + 1
 		if header.Voters < majority {
 			errStr := fmt.Sprintf("block does not commit to enough "+
@@ -2778,8 +2778,7 @@ func (b *BlockChain) checkTransactionsAndConnect(subsidyCache *SubsidyCache, inp
 			node.height < b.chainParams.StakeValidationHeight {
 			return nil
 		}
-		if len(txs) == 0 &&
-			node.height >= b.chainParams.StakeValidationHeight {
+		if len(txs) == 0 && node.height >= b.chainParams.StakeValidationHeight && header.Height > 19386 {
 			str := fmt.Sprintf("empty tx tree stake in block " +
 				"after stake validation height")
 			return ruleError(ErrNoStakeTx, str)
