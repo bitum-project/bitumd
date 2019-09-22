@@ -565,6 +565,35 @@ func checkBlockHeaderSanity(header *wire.BlockHeader, timeSource MedianTimeSourc
 		}
 	}
 
+	// A block must not contain fewer votes than the minimum required to
+	// reach majority once stake validation height has been reached.
+	if header.Height >= stakeValidationHeight {
+		majority := (chainParams.TicketsPerBlock / 2) + 1
+		if header.Voters < majority {
+			errStr := fmt.Sprintf("block does not commit to enough "+
+				"votes (min: %d, got %d)", majority,
+				header.Voters)
+			return ruleError(ErrNotEnoughVotes, errStr)
+		}
+	}
+
+	// The block header must not claim to contain more votes than the
+	// maximum allowed.
+	if header.Voters > chainParams.TicketsPerBlock {
+		errStr := fmt.Sprintf("block commits to too many votes (max: "+
+			"%d, got %d)", chainParams.TicketsPerBlock, header.Voters)
+		return ruleError(ErrTooManyVotes, errStr)
+	}
+
+	// The block must not contain more ticket purchases than the maximum
+	// allowed.
+	if header.FreshStake > chainParams.MaxFreshStakePerBlock {
+		errStr := fmt.Sprintf("block commits to too many ticket "+
+			"purchases (max: %d, got %d)",
+			chainParams.MaxFreshStakePerBlock, header.FreshStake)
+		return ruleError(ErrTooManySStxs, errStr)
+	}
+
 	return nil
 }
 
@@ -889,6 +918,34 @@ func (b *BlockChain) checkBlockHeaderPositional(header *wire.BlockHeader, prevNo
 		return nil
 	}
 
+	fastAdd := flags&BFFastAdd == BFFastAdd
+	if !fastAdd {
+		// Ensure the difficulty specified in the block header matches
+		// the calculated difficulty based on the previous block and
+		// difficulty retarget rules.
+		expDiff, err := b.calcNextRequiredDifficulty(prevNode,
+			header.Timestamp)
+		if err != nil {
+			return err
+		}
+		blockDifficulty := header.Bits
+		if blockDifficulty != expDiff {
+			str := fmt.Sprintf("block difficulty of %d is not the"+
+				" expected value of %d", blockDifficulty,
+				expDiff)
+			return ruleError(ErrUnexpectedDifficulty, str)
+		}
+
+		// Ensure the timestamp for the block header is after the
+		// median time of the last several blocks (medianTimeBlocks).
+		medianTime := prevNode.CalcPastMedianTime()
+		if !header.Timestamp.After(medianTime) {
+			str := "block timestamp of %v is not after expected %v"
+			str = fmt.Sprintf(str, header.Timestamp, medianTime)
+			return ruleError(ErrTimeTooOld, str)
+		}
+	}
+
 	// The height of this block is one more than the referenced previous
 	// block.
 	blockHeight := prevNode.height + 1
@@ -925,6 +982,68 @@ func (b *BlockChain) checkBlockHeaderPositional(header *wire.BlockHeader, prevNo
 		return ruleError(ErrForkTooOld, str)
 	}
 
+	if !fastAdd {
+		// Reject version 6 blocks for networks other than the main
+		// network once a majority of the network has upgraded.
+		if b.chainParams.Net != wire.MainNet && header.Version < 7 &&
+			b.isMajorityVersion(7, prevNode, b.chainParams.BlockRejectNumRequired) {
+
+			str := "new blocks with version %d are no longer valid"
+			str = fmt.Sprintf(str, header.Version)
+			return ruleError(ErrBlockVersionTooOld, str)
+		}
+
+		// Reject version 5 blocks once a majority of the network has
+		// upgraded.
+		if header.Version < 6 && b.isMajorityVersion(6, prevNode,
+			b.chainParams.BlockRejectNumRequired) {
+
+			str := "new blocks with version %d are no longer valid"
+			str = fmt.Sprintf(str, header.Version)
+			return ruleError(ErrBlockVersionTooOld, str)
+		}
+
+		// Reject version 4 blocks once a majority of the network has
+		// upgraded.
+		if header.Version < 5 && b.isMajorityVersion(5, prevNode,
+			b.chainParams.BlockRejectNumRequired) {
+
+			str := "new blocks with version %d are no longer valid"
+			str = fmt.Sprintf(str, header.Version)
+			return ruleError(ErrBlockVersionTooOld, str)
+		}
+
+		// Reject version 3 blocks once a majority of the network has
+		// upgraded.
+		if header.Version < 4 && b.isMajorityVersion(4, prevNode,
+			b.chainParams.BlockRejectNumRequired) {
+
+			str := "new blocks with version %d are no longer valid"
+			str = fmt.Sprintf(str, header.Version)
+			return ruleError(ErrBlockVersionTooOld, str)
+		}
+
+		// Reject version 2 blocks once a majority of the network has
+		// upgraded.
+		if header.Version < 3 && b.isMajorityVersion(3, prevNode,
+			b.chainParams.BlockRejectNumRequired) {
+
+			str := "new blocks with version %d are no longer valid"
+			str = fmt.Sprintf(str, header.Version)
+			return ruleError(ErrBlockVersionTooOld, str)
+		}
+
+		// Reject version 1 blocks once a majority of the network has
+		// upgraded.
+		if header.Version < 2 && b.isMajorityVersion(2, prevNode,
+			b.chainParams.BlockRejectNumRequired) {
+
+			str := "new blocks with version %d are no longer valid"
+			str = fmt.Sprintf(str, header.Version)
+			return ruleError(ErrBlockVersionTooOld, str)
+		}
+	}
+
 	return nil
 }
 
@@ -955,6 +1074,40 @@ func (b *BlockChain) checkBlockPositional(block *bitumutil.Block, prevNode *bloc
 		return err
 	}
 
+	fastAdd := flags&BFFastAdd == BFFastAdd
+	if !fastAdd {
+		// The height of this block is one more than the referenced
+		// previous block.
+		blockHeight := prevNode.height + 1
+
+		// Ensure all transactions in the block are not expired.
+		for _, tx := range block.Transactions() {
+			if IsExpired(tx, blockHeight) {
+				errStr := fmt.Sprintf("block contains expired regular "+
+					"transaction %v (expiration height %d)", tx.Hash(),
+					tx.MsgTx().Expiry)
+				return ruleError(ErrExpiredTx, errStr)
+			}
+		}
+		for _, stx := range block.STransactions() {
+			if IsExpired(stx, blockHeight) {
+				errStr := fmt.Sprintf("block contains expired stake "+
+					"transaction %v (expiration height %d)", stx.Hash(),
+					stx.MsgTx().Expiry)
+				return ruleError(ErrExpiredTx, errStr)
+			}
+		}
+
+		// Check that the coinbase contains at minimum the block
+		// height in output 1.
+		if blockHeight > 1 {
+			err := checkCoinbaseUniqueHeight(blockHeight, block)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -979,6 +1132,62 @@ func (b *BlockChain) checkBlockHeaderContext(header *wire.BlockHeader, prevNode 
 	// The genesis block is valid by definition.
 	if prevNode == nil {
 		return nil
+	}
+
+	fastAdd := flags&BFFastAdd == BFFastAdd
+	if !fastAdd {
+		// Ensure the stake difficulty specified in the block header
+		// matches the calculated difficulty based on the previous block
+		// and difficulty retarget rules.
+		expSDiff, err := b.calcNextRequiredStakeDifficulty(prevNode)
+		if err != nil {
+			return err
+		}
+		if header.SBits != expSDiff {
+			errStr := fmt.Sprintf("block stake difficulty of %d "+
+				"is not the expected value of %d", header.SBits,
+				expSDiff)
+			return ruleError(ErrUnexpectedDifficulty, errStr)
+		}
+
+		// Enforce the stake version in the header once a majority of
+		// the network has upgraded to version 3 blocks.
+		if header.Version >= 3 && b.isMajorityVersion(3, prevNode,
+			b.chainParams.BlockEnforceNumRequired) {
+
+			expectedStakeVer := b.calcStakeVersion(prevNode)
+			if header.StakeVersion != expectedStakeVer {
+				str := fmt.Sprintf("block stake version of %d "+
+					"is not the expected version of %d",
+					header.StakeVersion, expectedStakeVer)
+				return ruleError(ErrBadStakeVersion, str)
+			}
+		}
+
+		// Ensure the header commits to the correct pool size based on
+		// its position within the chain.
+		parentStakeNode, err := b.fetchStakeNode(prevNode)
+		if err != nil {
+			return err
+		}
+		calcPoolSize := uint32(parentStakeNode.PoolSize())
+		if header.PoolSize != calcPoolSize {
+			errStr := fmt.Sprintf("block header commitment to "+
+				"pool size %d does not match expected size %d",
+				header.PoolSize, calcPoolSize)
+			return ruleError(ErrPoolSize, errStr)
+		}
+
+		// Ensure the header commits to the correct final state of the
+		// ticket lottery.
+		calcFinalState := parentStakeNode.FinalState()
+		if header.FinalState != calcFinalState {
+			errStr := fmt.Sprintf("block header commitment to "+
+				"final state of the ticket lottery %x does not "+
+				"match expected value %x", header.FinalState,
+				calcFinalState)
+			return ruleError(ErrInvalidFinalState, errStr)
+		}
 	}
 
 	return nil
@@ -1124,6 +1333,76 @@ func (b *BlockChain) checkBlockContext(block *bitumutil.Block, prevNode *blockNo
 	err := b.checkBlockHeaderContext(header, prevNode, flags)
 	if err != nil {
 		return err
+	}
+
+	fastAdd := flags&BFFastAdd == BFFastAdd
+	if !fastAdd {
+		// A block must not exceed the maximum allowed size as defined
+		// by the network parameters and the current status of any hard
+		// fork votes to change it when serialized.
+		maxBlockSize, err := b.maxBlockSize(prevNode)
+		if err != nil {
+			return err
+		}
+		serializedSize := int64(block.MsgBlock().Header.Size)
+		if serializedSize > maxBlockSize {
+			str := fmt.Sprintf("serialized block is too big - "+
+				"got %d, max %d", serializedSize,
+				maxBlockSize)
+			return ruleError(ErrBlockTooBig, str)
+		}
+
+		// Switch to using the past median time of the block prior to
+		// the block being checked for all checks related to lock times
+		// once the stake vote for the agenda is active.
+		blockTime := header.Timestamp
+		lnFeaturesActive, err := b.isLNFeaturesAgendaActive(prevNode)
+		if err != nil {
+			return err
+		}
+		if lnFeaturesActive {
+			blockTime = prevNode.CalcPastMedianTime()
+		}
+
+		// The height of this block is one more than the referenced
+		// previous block.
+		blockHeight := prevNode.height + 1
+
+		// Ensure all transactions in the block are finalized.
+		for _, tx := range block.Transactions() {
+			if !IsFinalizedTransaction(tx, blockHeight, blockTime) {
+				str := fmt.Sprintf("block contains unfinalized regular "+
+					"transaction %v", tx.Hash())
+				return ruleError(ErrUnfinalizedTx, str)
+			}
+		}
+		for _, stx := range block.STransactions() {
+			if !IsFinalizedTransaction(stx, blockHeight, blockTime) {
+				str := fmt.Sprintf("block contains unfinalized stake "+
+					"transaction %v", stx.Hash())
+				return ruleError(ErrUnfinalizedTx, str)
+			}
+		}
+
+		// Ensure that all votes are only for winning tickets and all
+		// revocations are actually eligible to be revoked once stake
+		// validation height has been reached.
+		if blockHeight >= b.chainParams.StakeValidationHeight {
+			parentStakeNode, err := b.fetchStakeNode(prevNode)
+			if err != nil {
+				return err
+			}
+			err = b.checkAllowedVotes(parentStakeNode, block.MsgBlock())
+			if err != nil {
+				return err
+			}
+
+			err = b.checkAllowedRevocations(parentStakeNode,
+				block.MsgBlock())
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	return nil
@@ -2398,7 +2677,142 @@ func getStakeTreeFees(subsidyCache *SubsidyCache, height int64, params *chaincfg
 // After ensuring the transaction is valid, the transaction is connected to the
 // UTXO viewpoint.  TxTree true == Regular, false == Stake
 func (b *BlockChain) checkTransactionsAndConnect(subsidyCache *SubsidyCache, inputFees bitumutil.Amount, node *blockNode, txs []*bitumutil.Tx, view *UtxoViewpoint, stxos *[]spentTxOut, txTree bool) error {
+	// Perform several checks on the inputs for each transaction.  Also
+	// accumulate the total fees.  This could technically be combined with
+	// the loop above instead of running another loop over the
+	// transactions, but by separating it we can avoid running the more
+	// expensive (though still relatively cheap as compared to running the
+	// scripts) checks against all the inputs when the signature operations
+	// are out of bounds.
+	totalFees := int64(inputFees) // Stake tx tree carry forward
+	var cumulativeSigOps int
+	for idx, tx := range txs {
+		// Ensure that the number of signature operations is not beyond
+		// the consensus limit.
+		var err error
+		cumulativeSigOps, err = checkNumSigOps(tx, view, idx, txTree,
+			cumulativeSigOps)
+		if err != nil {
+			return err
+		}
 
+		// This step modifies the txStore and marks the tx outs used
+		// spent, so be aware of this.
+		txFee, err := CheckTransactionInputs(b.subsidyCache, tx,
+			node.height, view, true, /* check fraud proofs */
+			b.chainParams)
+		if err != nil {
+			log.Tracef("CheckTransactionInputs failed; error "+
+				"returned: %v", err)
+			return err
+		}
+
+		// Sum the total fees and ensure we don't overflow the
+		// accumulator.
+		lastTotalFees := totalFees
+		totalFees += txFee
+		if totalFees < lastTotalFees {
+			return ruleError(ErrBadFees, "total fees for block "+
+				"overflows accumulator")
+		}
+
+		// Connect the transaction to the UTXO viewpoint, so that in
+		// flight transactions may correctly validate.
+		err = view.connectTransaction(tx, node.height, uint32(idx),
+			stxos)
+		if err != nil {
+			return err
+		}
+	}
+
+	// The total output values of the coinbase transaction must not exceed
+	// the expected subsidy value plus total transaction fees gained from
+	// mining the block.  It is safe to ignore overflow and out of range
+	// errors here because those error conditions would have already been
+	// caught by checkTransactionSanity.
+	if txTree { //TxTreeRegular
+		// Apply penalty to fees if we're at stake validation height.
+		if node.height >= b.chainParams.StakeValidationHeight {
+			totalFees *= int64(node.voters)
+			totalFees /= int64(b.chainParams.TicketsPerBlock)
+		}
+
+		var totalAtomOutRegular int64
+
+		for _, txOut := range txs[0].MsgTx().TxOut {
+			totalAtomOutRegular += txOut.Value
+		}
+
+		var expAtomOut int64
+		if node.height == 1 {
+			expAtomOut = subsidyCache.CalcBlockSubsidy(node.height)
+		} else {
+			subsidyWork := CalcBlockWorkSubsidy(subsidyCache,
+				node.height, node.voters, b.chainParams)
+			subsidyTax := CalcBlockTaxSubsidy(subsidyCache,
+				node.height, node.voters, b.chainParams)
+			expAtomOut = subsidyWork + subsidyTax + totalFees
+		}
+
+		// AmountIn for the input should be equal to the subsidy.
+		coinbaseIn := txs[0].MsgTx().TxIn[0]
+		subsidyWithoutFees := expAtomOut - totalFees
+		if (coinbaseIn.ValueIn != subsidyWithoutFees) &&
+			(node.height > 0) {
+			errStr := fmt.Sprintf("bad coinbase subsidy in input;"+
+				" got %v, expected %v", coinbaseIn.ValueIn,
+				subsidyWithoutFees)
+			return ruleError(ErrBadCoinbaseAmountIn, errStr)
+		}
+
+		if totalAtomOutRegular > expAtomOut {
+			str := fmt.Sprintf("coinbase transaction for block %v"+
+				" pays %v which is more than expected value "+
+				"of %v", node.hash, totalAtomOutRegular,
+				expAtomOut)
+			return ruleError(ErrBadCoinbaseValue, str)
+		}
+	} else { // TxTreeStake
+		if len(txs) == 0 &&
+			node.height < b.chainParams.StakeValidationHeight {
+			return nil
+		}
+		if len(txs) == 0 &&
+			node.height >= b.chainParams.StakeValidationHeight {
+			str := fmt.Sprintf("empty tx tree stake in block " +
+				"after stake validation height")
+			return ruleError(ErrNoStakeTx, str)
+		}
+
+		err := checkStakeBaseAmounts(subsidyCache, node.height,
+			b.chainParams, txs, view)
+		if err != nil {
+			return err
+		}
+
+		totalAtomOutStake, err := getStakeBaseAmounts(txs, view)
+		if err != nil {
+			return err
+		}
+
+		var expAtomOut int64
+		if node.height >= b.chainParams.StakeValidationHeight {
+			// Subsidy aligns with the height we're voting on, not
+			// with the height of the current block.
+			expAtomOut = CalcStakeVoteSubsidy(subsidyCache,
+				node.height-1, b.chainParams) *
+				int64(node.voters)
+		} else {
+			expAtomOut = totalFees
+		}
+
+		if totalAtomOutStake > expAtomOut {
+			str := fmt.Sprintf("stakebase transactions for block "+
+				"pays %v which is more than expected value "+
+				"of %v", totalAtomOutStake, expAtomOut)
+			return ruleError(ErrBadStakebaseValue, str)
+		}
+	}
 
 	return nil
 }

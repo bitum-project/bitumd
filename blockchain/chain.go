@@ -1511,19 +1511,19 @@ func (b *BlockChain) connectBestChain(node *blockNode, block, parent *bitumutil.
 	// work for this new side chain is not enough to make it the new chain.
 	if node.workSum.Cmp(tip.workSum) <= 0 {
 		// Log information about how the block is forking the chain.
-//		fork := b.bestChain.FindFork(node)
-//		if fork.hash == *parentHash {
-//			log.Infof("FORK: Block %v (height %v) forks the chain at height "+
-//				"%d/block %v, but does not cause a reorganize",
-//				node.hash, node.height, fork.height, fork.hash)
-//		} else {
-//			log.Infof("EXTEND FORK: Block %v (height %v) extends a side chain "+
-//				"which forks the chain at height %d/block %v", node.hash,
-//				node.height, fork.height, fork.hash)
-//		}
+		fork := b.bestChain.FindFork(node)
+		if fork.hash == *parentHash {
+			log.Infof("FORK: Block %v (height %v) forks the chain at height "+
+				"%d/block %v, but does not cause a reorganize",
+				node.hash, node.height, fork.height, fork.hash)
+		} else {
+			log.Infof("EXTEND FORK: Block %v (height %v) extends a side chain "+
+				"which forks the chain at height %d/block %v", node.hash,
+				node.height, fork.height, fork.hash)
+		}
 
-//		forkLen := node.height - fork.height
-//		return forkLen, nil
+		forkLen := node.height - fork.height
+		return forkLen, nil
 	}
 
 	// We're extending (or creating) a side chain and the cumulative work
