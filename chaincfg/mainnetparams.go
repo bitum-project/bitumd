@@ -16,17 +16,18 @@ var MainNetParams = Params{
 	Name:        "mainnet",
 	Net:         wire.MainNet,
 	DefaultPort: "9208",
-	DNSSeeds: []DNSSeed{
-		{"dnsseed.bitum.io", true},
-	},
+	DNSSeeds: nil,
+	//[]DNSSeed{
+	//	{"dnsseed.bitum.io", true},
+	//},
 
 	// Chain parameters
 	GenesisBlock:             &genesisBlock,
 	GenesisHash:              &genesisHash,
 	PowLimit:                 mainPowLimit,
 	PowLimitBits:             0x1d00ffff,
-	ReduceMinDifficulty:      true,
-	MinDiffReductionTime:     time.Minute * 10, // ~99.3% chance to be mined before reduction
+	ReduceMinDifficulty:      false,
+	MinDiffReductionTime:     0, //time.Minute * 10, // ~99.3% chance to be mined before reduction
 	GenerateSupported:        true,
 	MaximumBlockSizes:        []int{393216},
 	MaxTxSize:                393216,
@@ -60,6 +61,7 @@ var MainNetParams = Params{
 		{19317, newHashFromStr("000000000000061f79d3d678b85dadf213d34d123522ad95cf800ed2738b45d9")},
 		{19318, newHashFromStr("000000000000023ae49af3fe91e5a11c83a17ab82adbb4b7a1ca3ae53c54de75")},
 		{19319, newHashFromStr("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")},
+		{19320, newHashFromStr("00000000044bc4922bb45b350a6be8e08443c520d949d43a7515b92762311045")},
 	},
 
 	// The miner confirmation window is defined as:

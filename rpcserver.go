@@ -2797,13 +2797,13 @@ func handleGetBlockTemplateRequest(s *rpcServer, request *bitumjson.TemplateRequ
 	}
 
 	// No point in generating or accepting work before the chain is synced.
-	//bestHeight := s.server.blockManager.chain.BestSnapshot().Height
-	//if bestHeight != 0 && !s.server.blockManager.IsCurrent() {
-	//	return nil, &bitumjson.RPCError{
-	//		Code:    bitumjson.ErrRPCClientInInitialDownload,
-	//		Message: "Bitum is downloading blocks...",
-	//	}
-	//}
+//	bestHeight := s.server.blockManager.chain.BestSnapshot().Height
+//	if bestHeight != 0 && !s.server.blockManager.IsCurrent() {
+//		return nil, &bitumjson.RPCError{
+//			Code:    bitumjson.ErrRPCClientInInitialDownload,
+//			Message: "Bitum is downloading blocks...",
+//		}
+//	}
 
 	// When a long poll ID was provided, this is a long poll request by the
 	// client to be notified when block template referenced by the ID
@@ -3149,6 +3149,10 @@ func handleGetHeaders(s *rpcServer, cmd interface{}, closeChan <-chan struct{}) 
 		return nil, err
 	}
 	var hashStop chainhash.Hash
+	if(hashStop.String() == "0000000000000000000000000000000000000000000000000000000000000000") {
+		NewHashStop := []byte("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")
+		hashStop = chainhash.HashH(NewHashStop)
+	}
 	if c.HashStop != "" {
 		err := chainhash.Decode(&hashStop, c.HashStop)
 		if err != nil {
@@ -4325,13 +4329,13 @@ func handleGetWork(s *rpcServer, cmd interface{}, closeChan <-chan struct{}) (in
 	}
 
 	// No point in generating or accepting work before the chain is synced.
-	//bestHeight := s.server.blockManager.chain.BestSnapshot().Height
-	//if bestHeight != 0 && !s.server.blockManager.IsCurrent() {
-	//	return nil, &bitumjson.RPCError{
-	//		Code:    bitumjson.ErrRPCClientInInitialDownload,
-	//		Message: "Bitum is downloading blocks...",
-	//	}
-	//}
+//	bestHeight := s.server.blockManager.chain.BestSnapshot().Height
+//	if bestHeight != 0 && !s.server.blockManager.IsCurrent() {
+//		return nil, &bitumjson.RPCError{
+//			Code:    bitumjson.ErrRPCClientInInitialDownload,
+//			Message: "Bitum is downloading blocks...",
+//		}
+//	}
 
 	c := cmd.(*bitumjson.GetWorkCmd)
 

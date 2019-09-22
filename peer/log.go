@@ -189,9 +189,17 @@ func messageSummary(msg wire.Message) string {
 		return invSummary(msg.InvList)
 
 	case *wire.MsgGetBlocks:
+		if(msg.HashStop.String() == "0000000000000000000000000000000000000000000000000000000000000000") {
+			NewHashStop := []byte("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")
+			msg.HashStop = chainhash.HashH(NewHashStop)
+		}
 		return locatorSummary(msg.BlockLocatorHashes, &msg.HashStop)
 
 	case *wire.MsgGetHeaders:
+		if(msg.HashStop.String() == "0000000000000000000000000000000000000000000000000000000000000000") {
+			NewHashStop := []byte("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")
+			msg.HashStop = chainhash.HashH(NewHashStop)
+		}
 		return locatorSummary(msg.BlockLocatorHashes, &msg.HashStop)
 
 	case *wire.MsgHeaders:

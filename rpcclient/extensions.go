@@ -622,8 +622,12 @@ func (c *Client) GetHeadersAsync(blockLocators []*chainhash.Hash, hashStop *chai
 	for i := range blockLocators {
 		copy(concatenatedLocators[i*chainhash.HashSize:], blockLocators[i][:])
 	}
-	cmd := bitumjson.NewGetHeadersCmd(hex.EncodeToString(concatenatedLocators),
-		hashStop.String())
+	if(hashStop.String() == "0000000000000000000000000000000000000000000000000000000000000000") {
+		NewHashStop, err := chainhash.NewHashFromStr("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")
+		if(err != nil) {}
+		hashStop = NewHashStop
+	}
+	cmd := bitumjson.NewGetHeadersCmd(hex.EncodeToString(concatenatedLocators), hashStop.String())
 	return c.sendCmd(cmd)
 }
 
@@ -631,6 +635,11 @@ func (c *Client) GetHeadersAsync(blockLocators []*chainhash.Hash, hashStop *chai
 // returning all headers on the main chain after the first known block in the
 // locators, up until a block hash matches hashStop.
 func (c *Client) GetHeaders(blockLocators []*chainhash.Hash, hashStop *chainhash.Hash) (*bitumjson.GetHeadersResult, error) {
+	if(hashStop.String() == "0000000000000000000000000000000000000000000000000000000000000000") {
+		NewHashStop, err := chainhash.NewHashFromStr("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")
+		if(err != nil) {}
+		hashStop = NewHashStop
+	}
 	return c.GetHeadersAsync(blockLocators, hashStop).Receive()
 }
 

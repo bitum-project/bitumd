@@ -164,7 +164,7 @@ func CalcWork(bits uint32) *big.Int {
 // can have given starting difficulty bits and a duration.  It is mainly used to
 // verify that claimed proof of work by a block is sane as compared to a
 // known good checkpoint.
-func (b *BlockChain) calcEasiestDifficulty(bits uint32, duration time.Duration) uint32 {
+func (b *BlockChain) calcEasiestDifficulty(bits uint32, duration time.Duration, height int64) uint32 {
 	// Convert types used in the calculations below.
 	durationVal := int64(duration)
 	adjustmentFactor := big.NewInt(b.chainParams.RetargetAdjustmentFactor)
@@ -173,6 +173,11 @@ func (b *BlockChain) calcEasiestDifficulty(bits uint32, duration time.Duration) 
 
 	// The test network rules allow minimum difficulty blocks once too much
 	// time has elapsed without mining a block.
+
+	if (height >= 19318) {
+		log.Debugf("(calcEasiestDifficulty) Block height %d", height)
+		return b.chainParams.PowLimitBits
+	}
 	if b.chainParams.ReduceMinDifficulty {
 		if durationVal > int64(b.chainParams.MinDiffReductionTime) {
 			return b.chainParams.PowLimitBits
@@ -233,6 +238,11 @@ func (b *BlockChain) calcNextRequiredDifficulty(curNode *blockNode, newBlockTime
 	oldDiff := curNode.bits
 	oldDiffBig := CompactToBig(curNode.bits)
 
+	if (curNode.height >= 19318) {
+		log.Debugf("(calcNextRequiredDifficulty) Block height %d", curNode.height)
+		return b.chainParams.PowLimitBits, nil
+	}
+	
 	// We're not at a retarget point, return the oldDiff.
 	if (curNode.height+1)%b.chainParams.WorkDiffWindowSize != 0 {
 		// For networks that support it, allow special reduction of the

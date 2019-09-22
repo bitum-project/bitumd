@@ -785,16 +785,20 @@ func handleTooFewVoters(subsidyCache *blockchain.SubsidyCache, nextHeight int64,
 
 				// If we're on testnet, the time since this last block
 				// listed as the parent must be taken into consideration.
+				if (cptCopy.Block.Header.Height >= 19318) {
+					parentHash := cptCopy.Block.Header.PrevBlock
+					requiredDifficulty, err := bm.CalcNextRequiredDiffNode(&parentHash, ts)
+					if err != nil {
+						return nil, miningRuleError(ErrGettingDifficulty, err.Error())
+					}
+					cptCopy.Block.Header.Bits = requiredDifficulty
+				}
 				if bm.server.chainParams.ReduceMinDifficulty {
 					parentHash := cptCopy.Block.Header.PrevBlock
-
-					requiredDifficulty, err :=
-						bm.CalcNextRequiredDiffNode(&parentHash, ts)
+					requiredDifficulty, err := bm.CalcNextRequiredDiffNode(&parentHash, ts)
 					if err != nil {
-						return nil, miningRuleError(ErrGettingDifficulty,
-							err.Error())
+						return nil, miningRuleError(ErrGettingDifficulty, err.Error())
 					}
-
 					cptCopy.Block.Header.Bits = requiredDifficulty
 				}
 
@@ -879,16 +883,20 @@ func handleTooFewVoters(subsidyCache *blockchain.SubsidyCache, nextHeight int64,
 
 				// If we're on testnet, the time since this last block
 				// listed as the parent must be taken into consideration.
+				if (btMsgBlock.Header.Height >= 19318) {
+					parentHash := topBlock.MsgBlock().Header.PrevBlock
+					requiredDifficulty, err := bm.CalcNextRequiredDiffNode(&parentHash, ts)
+					if err != nil {
+						return nil, miningRuleError(ErrGettingDifficulty, err.Error())
+					}
+					btMsgBlock.Header.Bits = requiredDifficulty
+				}
 				if bm.server.chainParams.ReduceMinDifficulty {
 					parentHash := topBlock.MsgBlock().Header.PrevBlock
-
-					requiredDifficulty, err :=
-						bm.CalcNextRequiredDiffNode(&parentHash, ts)
+					requiredDifficulty, err := bm.CalcNextRequiredDiffNode(&parentHash, ts)
 					if err != nil {
-						return nil, miningRuleError(ErrGettingDifficulty,
-							err.Error())
+						return nil, miningRuleError(ErrGettingDifficulty, err.Error())
 					}
-
 					btMsgBlock.Header.Bits = requiredDifficulty
 				}
 
@@ -1125,58 +1133,6 @@ func (g *BlkTmplGenerator) NewBlockTemplate(payToAddress bitumutil.Address) (*Bl
 	prevHash := best.Hash
 	nextBlockHeight := best.Height + 1
 	stakeValidationHeight := g.chainParams.StakeValidationHeight
-
-	if nextBlockHeight >= stakeValidationHeight {
-		// Obtain the entire generation of blocks stemming from this parent.
-		children, err := g.blockManager.TipGeneration()
-		if err != nil {
-			return nil, miningRuleError(ErrFailedToGetGeneration, err.Error())
-		}
-
-		// Get the list of blocks that we can actually build on top of. If we're
-		// not currently on the block that has the most votes, switch to that
-		// block.
-		eligibleParents := SortParentsByVotes(g.txSource, prevHash, children,
-			g.chainParams)
-		if len(eligibleParents) == 0 {
-			minrLog.Debugf("Too few voters found on any HEAD block, " +
-				"recycling a parent block to mine on")
-			return handleTooFewVoters(subsidyCache, nextBlockHeight,
-				payToAddress, g.blockManager)
-		}
-
-		minrLog.Debugf("Found eligible parent %v with enough votes to build "+
-			"block on, proceeding to create a new block template",
-			eligibleParents[0])
-
-		// Force a reorganization to the parent with the most votes if we need
-		// to.
-		if eligibleParents[0] != prevHash {
-			for i := range eligibleParents {
-				newHead := &eligibleParents[i]
-				err := g.blockManager.ForceReorganization(prevHash, *newHead)
-				if err != nil {
-					minrLog.Errorf("failed to reorganize to new parent: %v", err)
-					continue
-				}
-
-				// Check to make sure we actually have the transactions
-				// (votes) we need in the mempool.
-				voteHashes := g.txSource.VoteHashesForBlock(newHead)
-				if len(voteHashes) == 0 {
-					return nil, fmt.Errorf("no vote metadata for block %v",
-						newHead)
-				}
-
-				if exist := g.txSource.HaveAllTransactions(voteHashes); !exist {
-					continue
-				} else {
-					prevHash = *newHead
-					break
-				}
-			}
-		}
-	}
 
 	// Get the current source transactions and create a priority queue to
 	// hold the transactions which are ready for inclusion into a block
@@ -1861,19 +1817,6 @@ mempoolLoop:
 		return nil, miningRuleError(ErrGettingDifficulty, err.Error())
 	}
 
-	// Return nil if we don't yet have enough voters; sometimes it takes a
-	// bit for the mempool to sync with the votes map and we end up down
-	// here despite having the relevant votes available in the votes map.
-	minimumVotesRequired :=
-		int((g.chainParams.TicketsPerBlock / 2) + 1)
-	if nextBlockHeight >= stakeValidationHeight &&
-		voters < minimumVotesRequired {
-		minrLog.Warnf("incongruent number of voters in mempool " +
-			"vs mempool.voters; not enough voters found")
-		return handleTooFewVoters(subsidyCache, nextBlockHeight, payToAddress,
-			g.blockManager)
-	}
-
 	// Correct transaction index fraud proofs for any transactions that
 	// are chains. maybeInsertStakeTx fills this in for stake transactions
 	// already, so only do it for regular transactions.
@@ -2045,6 +1988,13 @@ func (g *BlkTmplGenerator) UpdateBlockTime(header *wire.BlockHeader) error {
 
 	// If running on a network that requires recalculating the difficulty,
 	// do so now.
+	if (header.Height >= 19318) {
+		difficulty, err := g.chain.CalcNextRequiredDifficulty(newTimestamp)
+		if err != nil {
+			return miningRuleError(ErrGettingDifficulty, err.Error())
+		}
+		header.Bits = difficulty
+	}
 	if activeNetParams.ReduceMinDifficulty {
 		difficulty, err := g.chain.CalcNextRequiredDifficulty(newTimestamp)
 		if err != nil {

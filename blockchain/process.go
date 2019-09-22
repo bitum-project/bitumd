@@ -167,8 +167,7 @@ func (b *BlockChain) ProcessBlock(block *bitumutil.Block, flags BehaviorFlags) (
 			// expected based on elapsed time since the last checkpoint and
 			// maximum adjustment allowed by the retarget rules.
 			duration := blockHeader.Timestamp.Sub(checkpointTime)
-			requiredTarget := CompactToBig(b.calcEasiestDifficulty(
-				checkpointNode.bits, duration))
+			requiredTarget := CompactToBig(b.calcEasiestDifficulty(checkpointNode.bits, duration, block.Height()))
 			currentTarget := CompactToBig(blockHeader.Bits)
 			if currentTarget.Cmp(requiredTarget) > 0 {
 				str := fmt.Sprintf("block target difficulty of %064x "+

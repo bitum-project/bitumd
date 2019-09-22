@@ -233,6 +233,9 @@ out:
 
 			bi.blocksProcessed++
 			bi.lastHeight++
+			//if bi.lastHeight >= 15220 {
+			//	bi.wg.Done()
+			//}
 			imported, err := bi.processBlock(serializedBlock)
 			if err != nil {
 				bi.errChan <- err
