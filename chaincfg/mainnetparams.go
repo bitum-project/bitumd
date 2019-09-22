@@ -61,6 +61,7 @@ var MainNetParams = Params{
 		{19318, newHashFromStr("000000000000023ae49af3fe91e5a11c83a17ab82adbb4b7a1ca3ae53c54de75")},
 		{19319, newHashFromStr("000000000000072118e424d414cb35f80c9c9be63902cd7eec551f197cf4a99f")},
 		{19320, newHashFromStr("00000000044bc4922bb45b350a6be8e08443c520d949d43a7515b92762311045")},
+		{19380, newHashFromStr("000000007d1bbf936badb6804ad39ba3121a341eb635e0562a9aeb6b3143bb84")},
 	},
 
 	// The miner confirmation window is defined as:
