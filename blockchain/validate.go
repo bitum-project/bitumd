@@ -2776,11 +2776,11 @@ func (b *BlockChain) checkTransactionsAndConnect(subsidyCache *SubsidyCache, inp
 		if len(txs) == 0 && node.height < b.chainParams.StakeValidationHeight {
 			return nil
 		}
-		if len(txs) == 0 && node.height >= b.chainParams.StakeValidationHeight && node.height > 19385 {
-			str := fmt.Sprintf("empty tx tree stake in block " +
-				"after stake validation height")
-			return ruleError(ErrNoStakeTx, str)
-		}
+		//if len(txs) == 0 && node.height >= b.chainParams.StakeValidationHeight && node.height > 19385 {
+		//	str := fmt.Sprintf("empty tx tree stake in block " +
+		//		"after stake validation height")
+		//	return ruleError(ErrNoStakeTx, str)
+		//}
 
 		err := checkStakeBaseAmounts(subsidyCache, node.height,
 			b.chainParams, txs, view)
