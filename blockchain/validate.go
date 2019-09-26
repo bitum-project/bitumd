@@ -491,6 +491,9 @@ func checkBlockHeaderSanity(header *wire.BlockHeader, timeSource MedianTimeSourc
 	// The stake validation height should always be at least stake enabled
 	// height, so assert it because the code below relies on that assumption.
 	stakeValidationHeight := uint32(chainParams.StakeValidationHeight)
+	if(header.Height < 21212) {
+		stakeValidationHeight = uint32(4096)
+	}
 	stakeEnabledHeight := uint32(chainParams.StakeEnabledHeight)
 	if stakeEnabledHeight > stakeValidationHeight {
 		return AssertError(fmt.Sprintf("checkBlockHeaderSanity called "+
@@ -568,10 +571,9 @@ func checkBlockHeaderSanity(header *wire.BlockHeader, timeSource MedianTimeSourc
 	// A block must not contain fewer votes than the minimum required to
 	// reach majority once stake validation height has been reached.
 	if header.Height >= stakeValidationHeight && header.Height > 19385  {
-		if(header.Height < 29999) {
-			majority := uint16(0)
-		} else {
-			majority := (chainParams.TicketsPerBlock / 2) + 1
+		majority := uint16(0)
+		if(header.Height > 29999) {
+			majority = (chainParams.TicketsPerBlock / 2) + 1
 		}
 		if header.Voters < majority {
 			errStr := fmt.Sprintf("block does not commit to enough "+
@@ -692,6 +694,9 @@ func checkBlockSanity(block *bitumutil.Block, timeSource MedianTimeSource, flags
 	// Do some preliminary checks on each stake transaction to ensure they
 	// are sane while tallying each type before continuing.
 	stakeValidationHeight := uint32(chainParams.StakeValidationHeight)
+	if(block.Height() < 21212) {
+		stakeValidationHeight = uint32(4096)
+	}
 	var totalTickets, totalVotes, totalRevocations int64
 	var totalYesVotes int64
 	for txIdx, stx := range msgBlock.STransactions {
