@@ -25,8 +25,8 @@ var MainNetParams = Params{
 	GenesisHash:              &genesisHash,
 	PowLimit:                 mainPowLimit,
 	PowLimitBits:             0x1d00ffff,
-	ReduceMinDifficulty:      false,
-	MinDiffReductionTime:     0, //time.Minute * 10, // ~99.3% chance to be mined before reduction
+	ReduceMinDifficulty:      true,
+	MinDiffReductionTime:     time.Minute * 10, // ~99.3% chance to be mined before reduction
 	GenerateSupported:        true,
 	MaximumBlockSizes:        []int{393216},
 	MaxTxSize:                393216,
