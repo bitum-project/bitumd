@@ -1424,9 +1424,6 @@ func (b *BlockChain) flushBlockIndexWarnOnly() {
 func (b *BlockChain) connectBestChain(node *blockNode, block, parent *bitumutil.Block, flags BehaviorFlags) (int64, error) {
 	fastAdd := flags&BFFastAdd == BFFastAdd
 
-	if(node.height < 21212) {
-		fastAdd = false
-	}
 	// Ensure the passed parent is actually the parent of the block.
 	if *parent.Hash() != node.parent.hash {
 		panicf("parent block %v (height %v) does not match expected parent %v "+

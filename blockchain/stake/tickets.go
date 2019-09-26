@@ -468,7 +468,7 @@ func connectNode(node *Node, lotteryIV chainhash.Hash, ticketsVoted, revokedTick
 	// We only have to deal with vote-related issues and expiry after
 	// StakeEnabledHeight.
 	var err error
-	if connectedNode.height >= uint32(connectedNode.params.StakeEnabledHeight) {
+	if connectedNode.height >= uint32(connectedNode.params.StakeEnabledHeight) && connectedNode.height > 21339 {
 		// Basic sanity check.
 		for i := range ticketsVoted {
 			if !hashInSlice(ticketsVoted[i], node.nextWinners) {
