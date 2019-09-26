@@ -1179,13 +1179,13 @@ func (b *BlockChain) checkBlockHeaderContext(header *wire.BlockHeader, prevNode 
 		if err != nil {
 			return err
 		}
-		calcPoolSize := uint32(parentStakeNode.PoolSize())
-		if header.PoolSize != calcPoolSize {
-			errStr := fmt.Sprintf("block header commitment to "+
-				"pool size %d does not match expected size %d",
-				header.PoolSize, calcPoolSize)
-			return ruleError(ErrPoolSize, errStr)
-		}
+		//calcPoolSize := uint32(parentStakeNode.PoolSize())
+		//if header.PoolSize != calcPoolSize {
+		//	errStr := fmt.Sprintf("block header commitment to "+
+		//		"pool size %d does not match expected size %d",
+		//		header.PoolSize, calcPoolSize)
+		//	return ruleError(ErrPoolSize, errStr)
+		//}
 
 		// Ensure the header commits to the correct final state of the
 		// ticket lottery.
