@@ -2789,13 +2789,14 @@ func handleGetBlockTemplateRequest(s *rpcServer, request *bitumjson.TemplateRequ
 	// way to relay a found block or receive transactions to work on.
 	// However, allow this state when running in the regression test or
 	// simulation test mode.
+/*
 	if !cfg.SimNet && s.server.ConnectedCount() == 0 {
 		return nil, &bitumjson.RPCError{
 			Code:    bitumjson.ErrRPCClientNotConnected,
 			Message: "Bitum is not connected",
 		}
 	}
-
+*/
 	// No point in generating or accepting work before the chain is synced.
 //	bestHeight := s.server.blockManager.chain.BestSnapshot().Height
 //	if bestHeight != 0 && !s.server.blockManager.IsCurrent() {
@@ -4317,13 +4318,14 @@ func handleGetWork(s *rpcServer, cmd interface{}, closeChan <-chan struct{}) (in
 	// way to relay a found block or receive transactions to work on.
 	// However, allow this state when running in the regression test or
 	// simulation test mode.
+/*
 	if !cfg.SimNet && s.server.ConnectedCount() == 0 {
 		return nil, &bitumjson.RPCError{
 			Code:    bitumjson.ErrRPCClientNotConnected,
 			Message: "Bitum is not connected",
 		}
 	}
-
+*/
 	// No point in generating or accepting work before the chain is synced.
 //	bestHeight := s.server.blockManager.chain.BestSnapshot().Height
 //	if bestHeight != 0 && !s.server.blockManager.IsCurrent() {
