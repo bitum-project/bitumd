@@ -570,6 +570,7 @@ func checkBlockHeaderSanity(header *wire.BlockHeader, timeSource MedianTimeSourc
 
 	// A block must not contain fewer votes than the minimum required to
 	// reach majority once stake validation height has been reached.
+	majority := uint16(0)
 	if header.Height >= stakeValidationHeight && header.Height > 19385  {
 		if(header.Height < 2999999) {
 			majority := uint16(0)
