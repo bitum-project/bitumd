@@ -572,10 +572,8 @@ func checkBlockHeaderSanity(header *wire.BlockHeader, timeSource MedianTimeSourc
 	// reach majority once stake validation height has been reached.
 	if header.Height >= stakeValidationHeight && header.Height > 19385  {
 		majority := uint16(0)
-		if(header.Height < 2999999) {
-			majority := uint16(0)
-		} else {
-			majority := (chainParams.TicketsPerBlock / 2) + 1
+		if(header.Height >= 3000000) {
+			majority = (chainParams.TicketsPerBlock / 2) + 1
 		}
 		if header.Voters < majority {
 			errStr := fmt.Sprintf("block does not commit to enough "+
