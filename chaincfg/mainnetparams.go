@@ -17,7 +17,8 @@ var MainNetParams = Params{
 	Net:         wire.MainNet,
 	DefaultPort: "9208",
 	DNSSeeds: []DNSSeed{
-		{"dnsseed.bitum.io", true},
+		{"138.201.196.174", true},
+		{"193.47.35.72", true},
 	},
 
 	// Chain parameters
